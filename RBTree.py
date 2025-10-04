@@ -54,3 +54,24 @@ class RBTree:
     def pretty(self):
         s = "\n".join(self.pretty_lines())
         return s if s else "<empty>"
+
+    def inorder(self):
+        out = []
+
+        def walk(node):
+            if node is self.nil or node.val is None:
+                return
+            walk(node.left)
+            out.append(node.val)
+            walk(node.right)
+
+        walk(self.root)
+        return out
+
+    def size(self):
+        def count(node):
+            if node is self.nil:
+                return 0
+            return 1 + count(node.left) + count(node.right)
+
+        return count(self.root)
