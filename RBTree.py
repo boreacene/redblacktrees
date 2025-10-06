@@ -75,3 +75,86 @@ class RBTree:
             return 1 + count(node.left) + count(node.right)
 
         return count(self.root)
+
+    def insert(self, val):
+        new_node = RBNode(val)
+        new_node.red = True
+        new_node.left = self.nil
+        new_node.right = self.nil
+        new_node.parent = self.nil
+
+        parent = self.nil
+        x = self.root
+        while x is not self.nil:
+            parent = x
+            if val < x.val:
+                x = x.left
+            elif val > x.val:
+                x = x.right
+            else:
+                return
+
+        new_node.parent = parent
+        if parent is self.nil:
+            self.root = new_node
+        elif val < parent.val:
+            parent.left = new_node
+        else:
+            parent.right = new_node
+
+        self.root.parent = self.nil
+        self.root.red = False
+
+        self._debug(f"insert {val}")
+        self._debug(f"attached under {parent.val if parent is not self.nil else None}")
+
+    def is_bst(self):
+        def _ok(node, lo, hi):
+            if node is self.nil:
+                return True
+            value = node.val
+            if lo is not None and not (lo < value):
+                return False
+            if hi is not None and not (value < hi):
+                return False
+            return _ok(node.left, lo, value) and _ok(node.right, value, hi)
+
+        return _ok(self.root, None, None)
+
+    def rotate_left(self, x):
+        if x.right is self.nil:
+            return
+        y = x.right
+        B = y.left
+        x.right = B
+        if B is not self.nil:
+            B.parent = x
+        y.parent = x.parent
+        if x.parent is self.nil:
+            self.root = y
+        elif x is x.parent.left:
+            x.parent.left = y
+        else:
+            x.parent.right = y
+        y.left = x
+        x.parent = y
+        return
+
+    def rotate_right(self, x):
+        if x.left is self.nil:
+            return
+        y = x.left
+        B = y.right
+        x.left = B
+        if B is not self.nil:
+            B.parent = x
+        y.parent = x.parent
+        if x.parent is self.nil:
+            self.root = y
+        elif x is x.parent.left:
+            x.parent.left = y
+        else:
+            x.parent.right = y
+        y.right = x
+        x.parent = y
+        return
